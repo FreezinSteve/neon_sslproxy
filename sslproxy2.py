@@ -8,7 +8,7 @@ import ssl
 logging.basicConfig(level="DEBUG")
 
 bind_ip = '0.0.0.0'
-bind_port = 9000
+bind_port =8080
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((bind_ip, bind_port))
@@ -30,17 +30,22 @@ def handle_client_connection(client_socket):
         try:
             data = client_socket.recv(1024)
             if len(data) > 0:
-                logging.debug("RECV CLIENT %s" % data)
-                neon.sendall(data)
+                updated_data = data.decode('utf-8')
+                updated_data = updated_data.replace('Host: 192.168.1.130', 'Host: restservice-neon.niwa.co.nz')
+                neon.sendall(updated_data.encode())
                 start = time.time()
+                logging.debug('RECV CLIENT %s' % updated_data)
         except socket.timeout as e:
             pass
 
         try:
             data = neon.recv(1024)
             if len(data) > 0:
-                logging.debug("RECV NEON  %s" % data)
-                client_socket.sendall(data)
+                updated_data = data.decode('utf-8') 
+                updated_data = updated_data.replace('Host: restservice-neon.niwa.co.nz','Host: 192.168.1.130')
+                client_socket.sendall(updated_data.encode())
+                logging.debug('RECV NEON %s' % updated_data)
+                #client_socket.sendall(data)
                 # '}' only occurs at the end of the REST request and we 
                 # need to close the connection for the ESP to detect
                 # when it's received all of the data

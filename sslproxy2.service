@@ -1,0 +1,11 @@
+[Unit]
+Description=HTTP to HTTPS proxy for Neon Rest calls w/automatic host rewrite
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=3
+ExecStart=/usr/bin/python3 /home/pi/sslproxy2/sslproxy2.py
+
+[Install]
+WantedBy=multi-user.target
